@@ -90,18 +90,18 @@ public class AllPlayerDataManager : NetworkBehaviour
     {
         if(!IsServer) return;
 
-        // List<NetworkObject> playerObjects = FindObjectsOfType<PlayerMovement>()
-        //     .Select(x => x.transform.GetComponent<NetworkObject>()).ToList();
+        List<NetworkObject> playerObjects = FindObjectsOfType<PlayerMovement>()
+            .Select(x => x.transform.GetComponent<NetworkObject>()).ToList();
 
         // List<NetworkObject> bulletObjects = FindObjectsOfType<BulletData>()
         //     .Select(x => x.transform.GetComponent<NetworkObject>()).ToList();
 
 
 
-        // foreach (var playerobj in playerObjects)
-        // {
-        //    playerobj.Despawn(); 
-        // }
+        foreach (var playerobj in playerObjects)
+        {
+           playerobj.Despawn(); 
+        }
 
         // foreach (var bulletObject in bulletObjects)
         // {
