@@ -11,7 +11,7 @@ public class PlayerShootBullets : NetworkBehaviour
     private const float BULLET_DELAY = .2f;
     private const float SHOOTING_DELAY = .2f;
     private const float BULLET_SPEED = 5f;
-    private const float BULLET_ANGLE_AMPLYFY = .25f;
+    private const float BULLET_ANGLE_AMPLYFY = .11f;
     private const float BULLETSHOOTANGLEMAX = 25;
 
 
@@ -26,7 +26,7 @@ public class PlayerShootBullets : NetworkBehaviour
     
     public override void OnNetworkSpawn()
     {
-        bulletSpawnTransform = GetComponentInChildren<ShootBulletTransformPreference>().transform;
+        bulletSpawnTransform = GetComponentInChildren<ShootBulletTransformReference>().transform;
 
 
         if (GetComponent<NetworkObject>().IsOwner)
@@ -82,14 +82,14 @@ public class PlayerShootBullets : NetworkBehaviour
 
         while (true)
         {
-            StartShootBulletServerRpc(bulletShootAngle);
+            StartShootBulletServerRpc(bulletShootAngle, NetworkManager.Singleton.LocalClientId);
             yield return new WaitForSeconds(BULLET_DELAY);
         }
         
     }
 
     [ServerRpc(RequireOwnership = false)]
-    void StartShootBulletServerRpc(float bulletShootAngle)
+    void StartShootBulletServerRpc(float bulletShootAngle, ulong callerID)
     {
         Quaternion rotation = Quaternion.Euler(bulletShootAngle, 0, 1);
 
@@ -101,13 +101,14 @@ public class PlayerShootBullets : NetworkBehaviour
         NetworkObject bulletNetworkObject = bullet.GetComponent<NetworkObject>();
         
         bulletNetworkObject.Spawn();
+        bullet.GetComponent<BulletData>().SetOwnershipServerRpc(callerID);
 
         Rigidbody bulletRigidBody = bullet.GetComponent<Rigidbody>();
         
         bulletRigidBody.AddForce(bulletSpawnTransform.forward * BULLET_SPEED, ForceMode.VelocityChange);
         
     }
-
+    
     public override void OnNetworkDespawn()
     {
         
